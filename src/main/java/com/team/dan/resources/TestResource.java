@@ -1,9 +1,9 @@
-package com.team.dan;
+package com.team.dan.resources;
 
-import javax.ws.rs.Consumes;
-import javax.ws.rs.GET;
-import javax.ws.rs.Path;
-import javax.ws.rs.Produces;
+import com.team.dan.core.Event;
+import com.team.dan.db.EventDao;
+
+import javax.ws.rs.*;
 import javax.ws.rs.core.MediaType;
 
 /**
@@ -18,9 +18,22 @@ import javax.ws.rs.core.MediaType;
 @Consumes(MediaType.APPLICATION_JSON)
 public class TestResource {
 
+    private final EventDao eventDao;
+
+    public TestResource(EventDao eventDao) {
+        this.eventDao = eventDao;
+    }
+
     @GET
     @Path("name")
     public String firstResource() {
         return String.format("Hey there, Person. You know the secret!");
+    }
+
+    @GET
+    @Path("/event/{id}")
+    public Event getEvent(@PathParam("id") int id) {
+        Event event = eventDao.getEvent(id);
+        return event;
     }
 }
