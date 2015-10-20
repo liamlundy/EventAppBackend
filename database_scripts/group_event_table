@@ -1,0 +1,7 @@
+CREATE TABLE group_event
+(
+    group_id INT NOT NULL,
+    event_id INT NOT NULL,
+    FOREIGN KEY (group_id) REFERENCES groups (group_id),
+    FOREIGN KEY (event_id) REFERENCES events (event_id)
+);

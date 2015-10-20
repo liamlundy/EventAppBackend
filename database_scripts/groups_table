@@ -1,0 +1,6 @@
+CREATE TABLE groups
+(
+    group_id INT PRIMARY KEY NOT NULL AUTO_INCREMENT,
+    description LONGTEXT NOT NULL,
+    title VARCHAR(255) NOT NULL
+);
