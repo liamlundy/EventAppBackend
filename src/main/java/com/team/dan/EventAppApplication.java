@@ -2,6 +2,7 @@ package com.team.dan;
 
 import com.team.dan.core.Event;
 import com.team.dan.db.EventDao;
+import com.team.dan.resources.EventsResource;
 import com.team.dan.resources.TestResource;
 import io.dropwizard.Application;
 import io.dropwizard.jdbi.DBIFactory;
@@ -32,6 +33,7 @@ public class EventAppApplication extends Application<EventAppConfiguration>{
 
         //Resource registration
         environment.jersey().register(new TestResource(eventDao));
+        environment.jersey().register(new EventsResource(eventDao));
     }
 }
 

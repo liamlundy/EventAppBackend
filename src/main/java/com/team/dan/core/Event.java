@@ -4,6 +4,7 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import org.hibernate.validator.constraints.NotEmpty;
 
 import java.sql.Date;
+import java.sql.Time;
 
 /**
  * Author: Liam Lundy
@@ -28,7 +29,7 @@ public class Event {
 
     @JsonProperty
     @NotEmpty
-    private String desciption;
+    private String description;
 
     @JsonProperty
     @NotEmpty
@@ -36,11 +37,15 @@ public class Event {
 
     @JsonProperty
     @NotEmpty
-    private String locaton;
+    private String location;
 
     @JsonProperty
     @NotEmpty
-    private Date dateTime;
+    private Date date;
+
+    @JsonProperty
+    @NotEmpty
+    private Time time;
 
     public int getEventId() {
         return eventId;
@@ -66,12 +71,12 @@ public class Event {
         this.photoLocation = photoLocation;
     }
 
-    public String getDesciption() {
-        return desciption;
+    public String getDescription() {
+        return description;
     }
 
-    public void setDesciption(String desciption) {
-        this.desciption = desciption;
+    public void setDescription(String description) {
+        this.description = description;
     }
 
     public String getTitle() {
@@ -82,33 +87,28 @@ public class Event {
         this.title = title;
     }
 
-    public String getLocaton() {
-        return locaton;
+    public String getLocation() {
+        return location;
     }
 
-    public void setLocaton(String locaton) {
-        this.locaton = locaton;
+    public void setLocation(String location) {
+        this.location = location;
     }
 
-    public Date getDateTime() {
-        return dateTime;
+    public Date getDate() {
+        return date;
     }
 
-    public void setDateTime(Date dateTime) {
-        this.dateTime = dateTime;
+    public void setDate(Date date) {
+        this.date = date;
     }
 
-    @Override
-    public String toString() {
-        return "Event{" +
-                "eventId=" + eventId +
-                ", authorId=" + authorId +
-                ", photoLocation='" + photoLocation + '\'' +
-                ", desciption='" + desciption + '\'' +
-                ", title='" + title + '\'' +
-                ", locaton='" + locaton + '\'' +
-                ", dateTime=" + dateTime +
-                '}';
+    public Time getTime() {
+        return time;
+    }
+
+    public void setTime(Time time) {
+        this.time = time;
     }
 
     @Override
@@ -120,12 +120,12 @@ public class Event {
 
         if (eventId != event.eventId) return false;
         if (authorId != event.authorId) return false;
-        if (photoLocation != null ? !photoLocation.equals(event.photoLocation) : event.photoLocation != null)
-            return false;
-        if (desciption != null ? !desciption.equals(event.desciption) : event.desciption != null) return false;
-        if (title != null ? !title.equals(event.title) : event.title != null) return false;
-        if (locaton != null ? !locaton.equals(event.locaton) : event.locaton != null) return false;
-        return !(dateTime != null ? !dateTime.equals(event.dateTime) : event.dateTime != null);
+        if (!photoLocation.equals(event.photoLocation)) return false;
+        if (!description.equals(event.description)) return false;
+        if (!title.equals(event.title)) return false;
+        if (!location.equals(event.location)) return false;
+        if (!date.equals(event.date)) return false;
+        return time.equals(event.time);
 
     }
 
@@ -133,11 +133,26 @@ public class Event {
     public int hashCode() {
         int result = eventId;
         result = 31 * result + authorId;
-        result = 31 * result + (photoLocation != null ? photoLocation.hashCode() : 0);
-        result = 31 * result + (desciption != null ? desciption.hashCode() : 0);
-        result = 31 * result + (title != null ? title.hashCode() : 0);
-        result = 31 * result + (locaton != null ? locaton.hashCode() : 0);
-        result = 31 * result + (dateTime != null ? dateTime.hashCode() : 0);
+        result = 31 * result + photoLocation.hashCode();
+        result = 31 * result + description.hashCode();
+        result = 31 * result + title.hashCode();
+        result = 31 * result + location.hashCode();
+        result = 31 * result + date.hashCode();
+        result = 31 * result + time.hashCode();
         return result;
+    }
+
+    @Override
+    public String toString() {
+        return "Event{" +
+                "eventId=" + eventId +
+                ", authorId=" + authorId +
+                ", photoLocation='" + photoLocation + '\'' +
+                ", description='" + description + '\'' +
+                ", title='" + title + '\'' +
+                ", location='" + location + '\'' +
+                ", date=" + date +
+                ", time=" + time +
+                '}';
     }
 }

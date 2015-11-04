@@ -18,12 +18,13 @@ public class EventMapper implements ResultSetMapper<Event> {
     public Event map(int i, ResultSet resultSet, StatementContext statementContext) throws SQLException {
         Event event = new Event();
         event.setAuthorId(resultSet.getInt("author_id"));
-        event.setDateTime(resultSet.getDate("date_time"));
-        event.setDesciption(resultSet.getString("description"));
+        event.setDate(resultSet.getDate("date"));
+        event.setTime(resultSet.getTime("time"));
+        event.setDescription(resultSet.getString("description"));
         event.setEventId(resultSet.getInt("event_id"));
         event.setPhotoLocation(resultSet.getString("photo_loc"));
         event.setTitle(resultSet.getString("title"));
-        event.setLocaton(resultSet.getString("location"));
+        event.setLocation(resultSet.getString("location"));
         return event;
     }
 }

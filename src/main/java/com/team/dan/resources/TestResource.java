@@ -25,9 +25,9 @@ public class TestResource {
     }
 
     @GET
-    @Path("name")
-    public String firstResource() {
-        return String.format("Hey there, Person. You know the secret!");
+    @Path("name/{name}")
+    public String firstResource(@PathParam("name") String name) {
+        return String.format("Hey there, " + name + ". You know the secret!");
     }
 
     @GET
