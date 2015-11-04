@@ -30,6 +30,10 @@ public interface EventDao {
             "      date < DATE_ADD(NOW(), INTERVAL 1 WEEK)")
     public Set<Event> getNextWeek();
 
+    @SqlQuery("SELECT *\n" +
+            "FROM events")
+    public Set<Event> getAllEvents();
+
     @SqlUpdate("DELETE FROM events\n" +
             "WHERE event_id = :id")
     public void deleteEvent(@Bind("id") int id);

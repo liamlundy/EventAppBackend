@@ -32,6 +32,13 @@ public class EventsResource {
         return events;
     }
 
+    @GET
+    @Path("/allevents")
+    public Set<Event> getAllEvents() {
+        Set<Event> events = eventDao.getAllEvents();
+        return events;
+    }
+
     @DELETE
     @Path("/delete/{id}")
     public void deleteEvent(@PathParam("id") int id) {
