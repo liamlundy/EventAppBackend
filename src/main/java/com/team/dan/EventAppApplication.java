@@ -1,9 +1,12 @@
 package com.team.dan;
 
 import com.team.dan.core.Event;
+import com.team.dan.core.User;
 import com.team.dan.db.EventDao;
+import com.team.dan.db.UserDao;
 import com.team.dan.resources.EventsResource;
 import com.team.dan.resources.TestResource;
+import com.team.dan.resources.UserResource;
 import io.dropwizard.Application;
 import io.dropwizard.jdbi.DBIFactory;
 import io.dropwizard.setup.Environment;
@@ -30,10 +33,16 @@ public class EventAppApplication extends Application<EventAppConfiguration>{
 
         //DAOs
         final EventDao eventDao = jdbi.onDemand(EventDao.class);
+        final UserDao userDao = jdbi.onDemand(UserDao.class);
 
         //Resource registration
         environment.jersey().register(new TestResource(eventDao));
         environment.jersey().register(new EventsResource(eventDao));
+        environment.jersey().register(new UserResource(userDao));
+
+
+
+
     }
 }
 
