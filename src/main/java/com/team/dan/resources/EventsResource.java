@@ -51,4 +51,11 @@ public class EventsResource {
         eventDao.insertEvent(event.getAuthorId(), event.getPhotoLocation(), event.getDescription(), event.getTitle(),
                 event.getLocation(), event.getDate(), event.getTime());
     }
+
+    @GET
+    @Path("/id/{id}")
+    public Event getEvent(@PathParam("id") int id) {
+        Event event = eventDao.getEvent(id);
+        return event;
+    }
 }
