@@ -34,6 +34,11 @@ public interface EventDao {
             "FROM events")
     public Set<Event> getAllEvents();
 
+    @SqlQuery("SELECT photo_loc\n" +
+            "FROM events\n" +
+            "WHERE event_id = :id")
+    public String getEventPhotoPath(@Bind("id") int id);
+
     @SqlUpdate("DELETE FROM events\n" +
             "WHERE event_id = :id")
     public void deleteEvent(@Bind("id") int id);

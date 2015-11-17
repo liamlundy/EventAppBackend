@@ -1,10 +1,18 @@
 package com.team.dan.resources;
 
+import com.sun.imageio.plugins.common.ImageUtil;
 import com.team.dan.core.Event;
 import com.team.dan.db.EventDao;
 
+import javax.imageio.ImageIO;
 import javax.ws.rs.*;
 import javax.ws.rs.core.MediaType;
+import javax.ws.rs.core.Response;
+import java.awt.image.BufferedImage;
+import java.io.ByteArrayOutputStream;
+import java.io.File;
+import java.io.IOException;
+import java.io.InputStream;
 import java.util.Set;
 
 /**
@@ -57,5 +65,37 @@ public class EventsResource {
     public Event getEvent(@PathParam("id") int id) {
         Event event = eventDao.getEvent(id);
         return event;
+    }
+
+    @GET
+    @Path("/getImage/{eventId}")
+    @Produces({"images/gif", "images/png", "images/jpg" })
+    public Response getEventImage(@PathParam("eventId") int id) {
+
+        String path = eventDao.getEventPhotoPath(id);
+
+        BufferedImage image = getImage(path);
+
+        ByteArrayOutputStream baos = new ByteArrayOutputStream();
+        try {
+            ImageIO.write(image, "jpg", baos);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        byte[] imageData = baos.toByteArray();
+
+        if (imageData != null)
+            return Response.ok(imageData).build();
+
+        return Response.noContent().build();
+    }
+
+    private BufferedImage getImage(String filename) {
+        BufferedImage img = null;
+        try {
+            img = ImageIO.read(new File(filename));
+        } catch (IOException e) {
+        }
+        return img;
     }
 }
