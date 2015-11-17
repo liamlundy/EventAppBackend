@@ -2,10 +2,15 @@ package com.team.dan.resources;
 
 import com.team.dan.core.Event;
 import com.team.dan.db.EventDao;
+import org.glassfish.jersey.media.multipart.FormDataContentDisposition;
+import org.glassfish.jersey.media.multipart.FormDataParam;
 
 import javax.ws.rs.*;
 import javax.ws.rs.core.MediaType;
+import java.io.*;
 import java.util.Set;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 /**
  * Author: Liam Lundy
@@ -57,5 +62,13 @@ public class EventsResource {
     public Event getEvent(@PathParam("id") int id) {
         Event event = eventDao.getEvent(id);
         return event;
+    }
+
+    @POST
+    @Path("/uploadPhoto")
+    @Consumes(MediaType.MULTIPART_FORM_DATA)
+    public void fileUploaded(@FormDataParam("file") final InputStream inputStream,
+                             @FormDataParam("file") final FormDataContentDisposition contentDispositionHeader) {
+        InputStream stream = (inputStream);
     }
 }
