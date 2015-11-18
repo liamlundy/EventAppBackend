@@ -35,4 +35,9 @@ public interface UserDao {
 
     @SqlQuery("SELECT * FROM users")
     public Set<User> getAllUsers();
+
+    @SqlQuery("SELECT password\n" +
+            "FROM users\n" +
+            "WHERE email = :email")
+    public String getPassword(@Bind("email") String email);
 }

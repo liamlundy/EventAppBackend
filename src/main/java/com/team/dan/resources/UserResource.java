@@ -68,4 +68,15 @@ public class UserResource {
         }
         return users;
     }
+
+    @POST
+    @Path("/login")
+    public User getAllUsers(User userCredentials) {
+        User user = null;
+        String password = userDao.getPassword(userCredentials.getEmail());
+        if (password.equals(userCredentials.getPassword())) {
+            user = userDao.getUserByEmail(userCredentials.getEmail());
+        }
+        return user;
+    }
 }
