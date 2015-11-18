@@ -78,7 +78,7 @@ public class EventsResource {
 
         ByteArrayOutputStream baos = new ByteArrayOutputStream();
         try {
-            ImageIO.write(image, "jpg", baos);
+            ImageIO.write(image, "png", baos);
         } catch (IOException e) {
             e.printStackTrace();
         }
