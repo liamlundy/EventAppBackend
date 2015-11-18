@@ -4,6 +4,7 @@ import com.team.dan.core.User;
 import com.team.dan.db.EventDao;
 import com.team.dan.db.UserDao;
 
+import javax.annotation.security.RolesAllowed;
 import javax.ws.rs.*;
 import javax.ws.rs.core.MediaType;
 import java.util.Set;
@@ -57,6 +58,7 @@ public class UserResource {
         return user;
     }
 
+    @RolesAllowed("ADMIN")
     @GET
     @Path("/getall")
     public Set<User> getAllUsers() {

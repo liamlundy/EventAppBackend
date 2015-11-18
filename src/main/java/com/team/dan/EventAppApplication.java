@@ -1,5 +1,7 @@
 package com.team.dan;
 
+import com.team.dan.auth.EventAppAuthenticator;
+import com.team.dan.auth.EventAppAuthorizer;
 import com.team.dan.core.Event;
 import com.team.dan.core.User;
 import com.team.dan.db.EventDao;
@@ -8,8 +10,12 @@ import com.team.dan.resources.EventsResource;
 import com.team.dan.resources.TestResource;
 import com.team.dan.resources.UserResource;
 import io.dropwizard.Application;
+import io.dropwizard.auth.AuthDynamicFeature;
+import io.dropwizard.auth.AuthValueFactoryProvider;
+import io.dropwizard.auth.basic.BasicCredentialAuthFilter;
 import io.dropwizard.jdbi.DBIFactory;
 import io.dropwizard.setup.Environment;
+import org.glassfish.jersey.server.filter.RolesAllowedDynamicFeature;
 import org.skife.jdbi.v2.DBI;
 
 /**
@@ -41,7 +47,15 @@ public class EventAppApplication extends Application<EventAppConfiguration>{
         environment.jersey().register(new UserResource(userDao));
 
 
-
+        environment.jersey().register(new AuthDynamicFeature(
+                new BasicCredentialAuthFilter.Builder<User>()
+                        .setAuthenticator(new EventAppAuthenticator(userDao))
+                        .setAuthorizer(new EventAppAuthorizer(userDao))
+                        .setRealm("SUPER SECRET STUFF")
+                        .buildAuthFilter()));
+        environment.jersey().register(RolesAllowedDynamicFeature.class);
+        //If you want to use @Auth to inject a custom Principal type into your resource
+        environment.jersey().register(new AuthValueFactoryProvider.Binder(User.class));
 
     }
 }

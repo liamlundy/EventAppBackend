@@ -3,6 +3,8 @@ package com.team.dan.core;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import org.hibernate.validator.constraints.NotEmpty;
 
+import java.security.Principal;
+
 /**
  * Author: Liam Lundy
  * Creation Date: 11/3/15.
@@ -10,7 +12,7 @@ import org.hibernate.validator.constraints.NotEmpty;
  * Package: ${PACKAGE}
  * Project: ${PROJECT}
  */
-public class User {
+public class User implements Principal {
 
     @JsonProperty
     @NotEmpty
@@ -94,6 +96,10 @@ public class User {
 
     public void setPassword(String password) {
         this.password = password;
+    }
+
+    public String getName() {
+        return getEmail();
     }
 
     @Override

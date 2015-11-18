@@ -4,6 +4,7 @@ import com.sun.imageio.plugins.common.ImageUtil;
 import com.team.dan.core.Event;
 import com.team.dan.db.EventDao;
 
+import javax.annotation.security.PermitAll;
 import javax.imageio.ImageIO;
 import javax.ws.rs.*;
 import javax.ws.rs.core.MediaType;
@@ -53,6 +54,7 @@ public class EventsResource {
         eventDao.deleteEvent(id);
     }
 
+    @PermitAll
     @POST
     @Path("/create")
     public void createEvent(Event event) {
