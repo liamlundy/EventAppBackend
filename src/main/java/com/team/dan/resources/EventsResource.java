@@ -3,6 +3,7 @@ package com.team.dan.resources;
 import com.sun.imageio.plugins.common.ImageUtil;
 import com.team.dan.core.Event;
 import com.team.dan.db.EventDao;
+import org.apache.commons.io.FilenameUtils;
 
 import javax.imageio.ImageIO;
 import javax.ws.rs.*;
@@ -14,6 +15,7 @@ import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.Set;
+
 
 /**
  * Author: Liam Lundy
@@ -73,6 +75,34 @@ public class EventsResource {
     public Response getEventImage(@PathParam("eventId") int id) {
 
         String path = eventDao.getEventPhotoPath(id);
+
+        BufferedImage image = getImage(path);
+
+        ByteArrayOutputStream baos = new ByteArrayOutputStream();
+        try {
+            ImageIO.write(image, "png", baos);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        byte[] imageData = baos.toByteArray();
+
+        if (imageData != null)
+            return Response.ok(imageData).build();
+
+        return Response.noContent().build();
+    }
+
+    @GET
+    @Path("/getImageThumb/{eventId}")
+    @Produces({"images/gif", "images/png", "images/jpg" })
+    public Response getEventImageThumb(@PathParam("eventId") int id) {
+
+        String path = eventDao.getEventPhotoPath(id);
+
+        String ext = FilenameUtils.getExtension(path);
+        String pathMinusExtension  = FilenameUtils.removeExtension(path);
+
+        path = pathMinusExtension + ".thumb." + ext;
 
         BufferedImage image = getImage(path);
 
