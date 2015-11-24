@@ -21,10 +21,20 @@ public class EventAppAuthenticator implements Authenticator<BasicCredentials, Us
 
     private final UserDao userDao;
 
+    /**
+     * Creates a new instance of the authenticator
+     * @param userDao the user database interface
+     */
     public EventAppAuthenticator(UserDao userDao) {
         this.userDao = userDao;
     }
 
+    /**
+     * Authenticates the user
+     * @param basicCredentials A set of credentials including password and email
+     * @return Either an User or an empty optional
+     * @throws AuthenticationException if there are errors during the method.
+     */
     public Optional<User> authenticate(BasicCredentials basicCredentials) throws AuthenticationException {
         User user = userDao.getUserByEmail(basicCredentials.getUsername());
         if (user == null) {

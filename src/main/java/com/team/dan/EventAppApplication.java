@@ -27,17 +27,28 @@ import org.skife.jdbi.v2.DBI;
  */
 public class EventAppApplication extends Application<EventAppConfiguration>{
 
+    /**
+     * The main method for the application
+     * @param args the passed in arguments
+     * @throws Exception a generic exception
+     */
     public static void main(String[] args) throws Exception {
         new EventAppApplication().run(args);
     }
 
+    /**
+     * The main run method of the app
+     * @param eventAppConfiguration the event app configuration class
+     * @param environment the environment
+     * @throws Exception a generic exception
+     */
     @Override
     public void run(EventAppConfiguration eventAppConfiguration, Environment environment) throws Exception {
         //Database set up
         final DBIFactory factory = new DBIFactory();
         final DBI jdbi = factory.build(environment, eventAppConfiguration.getDataSourceFactory(), "mysql");
 
-        //DAOs
+        //Database Access Objects
         final EventDao eventDao = jdbi.onDemand(EventDao.class);
         final UserDao userDao = jdbi.onDemand(UserDao.class);
 
@@ -46,7 +57,7 @@ public class EventAppApplication extends Application<EventAppConfiguration>{
         environment.jersey().register(new EventsResource(eventDao));
         environment.jersey().register(new UserResource(userDao));
 
-
+        //authentication registration
         environment.jersey().register(new AuthDynamicFeature(
                 new BasicCredentialAuthFilter.Builder<User>()
                         .setAuthenticator(new EventAppAuthenticator(userDao))
@@ -54,7 +65,6 @@ public class EventAppApplication extends Application<EventAppConfiguration>{
                         .setRealm("SUPER SECRET STUFF")
                         .buildAuthFilter()));
         environment.jersey().register(RolesAllowedDynamicFeature.class);
-        //If you want to use @Auth to inject a custom Principal type into your resource
         environment.jersey().register(new AuthValueFactoryProvider.Binder(User.class));
 
     }
