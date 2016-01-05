@@ -4,6 +4,7 @@ import com.team.dan.core.User;
 import com.team.dan.db.EventDao;
 import com.team.dan.db.UserDao;
 
+import javax.annotation.security.RolesAllowed;
 import javax.ws.rs.*;
 import javax.ws.rs.core.MediaType;
 import java.util.Set;
@@ -26,6 +27,11 @@ public class UserResource {
         this.userDao = userDao;
     }
 
+    /**
+     * Return the User based on the user id
+     * @param id the user id
+     * @return the User
+     */
     @GET
     @Path("/id/{id}")
     public User getUserById(@PathParam("id") int id) {
@@ -38,6 +44,10 @@ public class UserResource {
         return user;
     }
 
+    /**
+     * Creates a new user
+     * @param user the User to create
+     */
     @POST
     @Path("/create")
     public void createUser(User user) {
@@ -45,6 +55,11 @@ public class UserResource {
                 user.getLastName());
     }
 
+    /**
+     * Return the User based on the user email
+     * @param email the user email
+     * @return the User
+     */
     @GET
     @Path("/email/{email}")
     public User getUserByEmail(@PathParam("email") String email) {
@@ -57,6 +72,11 @@ public class UserResource {
         return user;
     }
 
+    /**
+     * Returns the list of all users
+     * @return a Set of all the Users
+     */
+    @RolesAllowed("ADMIN")
     @GET
     @Path("/getall")
     public Set<User> getAllUsers() {
@@ -67,5 +87,21 @@ public class UserResource {
             e.printStackTrace();
         }
         return users;
+    }
+
+    /**
+     * Checks the User's credentials and returns the user if they are valid
+     * @param userCredentials the User containing only password and email
+     * @return the User or null if there credentials are invalid.
+     */
+    @POST
+    @Path("/login")
+    public User getAllUsers(User userCredentials) {
+        User user = null;
+        String password = userDao.getPassword(userCredentials.getEmail());
+        if (password.equals(userCredentials.getPassword())) {
+            user = userDao.getUserByEmail(userCredentials.getEmail());
+        }
+        return user;
     }
 }
