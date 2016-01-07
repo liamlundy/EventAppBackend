@@ -15,6 +15,7 @@ import io.dropwizard.auth.AuthValueFactoryProvider;
 import io.dropwizard.auth.basic.BasicCredentialAuthFilter;
 import io.dropwizard.jdbi.DBIFactory;
 import io.dropwizard.setup.Environment;
+import org.glassfish.jersey.media.multipart.MultiPartFeature;
 import org.glassfish.jersey.server.filter.RolesAllowedDynamicFeature;
 import org.skife.jdbi.v2.DBI;
 
@@ -56,6 +57,9 @@ public class EventAppApplication extends Application<EventAppConfiguration>{
         environment.jersey().register(new TestResource(eventDao));
         environment.jersey().register(new EventsResource(eventDao));
         environment.jersey().register(new UserResource(userDao));
+
+        //Register Multi Part file upload class
+        environment.jersey().register(MultiPartFeature.class);
 
         //authentication registration
         environment.jersey().register(new AuthDynamicFeature(

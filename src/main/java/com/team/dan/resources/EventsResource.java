@@ -2,17 +2,18 @@ package com.team.dan.resources;
 
 import com.team.dan.core.Event;
 import com.team.dan.db.EventDao;
+import org.apache.commons.io.FilenameUtils;
+import org.glassfish.jersey.media.multipart.FormDataContentDisposition;
+import org.glassfish.jersey.media.multipart.FormDataParam;
 
 import javax.annotation.security.PermitAll;
 import javax.imageio.ImageIO;
 import javax.ws.rs.*;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
+import java.awt.*;
 import java.awt.image.BufferedImage;
-import java.io.ByteArrayOutputStream;
-import java.io.File;
-import java.io.IOException;
-import java.io.InputStream;
+import java.io.*;
 import java.util.Set;
 
 /**
@@ -35,16 +36,16 @@ public class EventsResource {
 
     @GET
     @Path("/weeklyevents")
-    public Set<Event> getWeeklyEvents() {
+    public Response getWeeklyEvents() {
         Set<Event> events = eventDao.getNextWeek();
-        return events;
+        return Response.ok(events).build();
     }
 
     @GET
     @Path("/allevents")
-    public Set<Event> getAllEvents() {
+    public Response getAllEvents() {
         Set<Event> events = eventDao.getAllEvents();
-        return events;
+        return Response.ok(events).build();
     }
 
     @DELETE
@@ -53,19 +54,19 @@ public class EventsResource {
         eventDao.deleteEvent(id);
     }
 
+    @GET
+    @Path("/id/{id}")
+    public Response getEvent(@PathParam("id") int id) {
+        Event event = eventDao.getEvent(id);
+        return Response.ok(event).build();
+    }
+
     @PermitAll
     @POST
     @Path("/create")
     public void createEvent(Event event) {
         eventDao.insertEvent(event.getAuthorId(), event.getPhotoLocation(), event.getDescription(), event.getTitle(),
                 event.getLocation(), event.getDate(), event.getTime());
-    }
-
-    @GET
-    @Path("/id/{id}")
-    public Event getEvent(@PathParam("id") int id) {
-        Event event = eventDao.getEvent(id);
-        return event;
     }
 
     @GET
@@ -89,6 +90,57 @@ public class EventsResource {
             return Response.ok(imageData).build();
 
         return Response.noContent().build();
+    }
+
+    @POST
+    @Consumes(MediaType.MULTIPART_FORM_DATA)
+    @Path("/insert")
+    public Response fileUpload(@FormDataParam("image") final InputStream inputStream,
+                               @FormDataParam("image") final FormDataContentDisposition contentDispositionHeader) {
+        String imageExt = FilenameUtils.getExtension(contentDispositionHeader.getFileName());
+        try {
+            saveImage(inputStream, String.valueOf(1), imageExt);
+            saveImageThumb(String.valueOf(1), imageExt);
+        } catch (IOException e) {
+            e.printStackTrace();
+            return Response.serverError().build();
+        }
+        return Response.ok().build();
+    }
+
+    private void saveImage(InputStream inputStream, String fileName, String imageExt) throws IOException {
+        OutputStream os = new FileOutputStream("/home/liam/Documents/Web_Development/Projects/EventAppBackend/photos" + fileName + "." + imageExt);
+        byte[] buffer = new byte[4096];
+        int bytesRead;
+        while ((bytesRead = inputStream.read(buffer)) != -1) {
+            os.write(buffer, 0, bytesRead);
+        }
+        inputStream.close();
+        os.close();
+    }
+
+    private void saveImageThumb(String fileName, String imageExt) {
+        try {
+            BufferedImage bufferedImage = ImageIO.read(new File("/home/liam/Documents/Web_Development/Projects/EventAppBackend/photos" + fileName + "." + imageExt));
+            double ratio = (double) bufferedImage.getWidth() / (double) bufferedImage.getHeight();
+            double scaledHeight = 150;
+            double scaledWidth = ratio * scaledHeight;
+
+            // creates output image
+            BufferedImage outputImage = new BufferedImage((int) scaledWidth,
+                    (int) scaledHeight, bufferedImage.getType());
+
+            // scales the input image to the output image
+            Graphics2D g2d = outputImage.createGraphics();
+            g2d.drawImage(bufferedImage, 0, 0, (int) scaledWidth, (int) scaledHeight, null);
+            g2d.dispose();
+
+            // writes to output file
+            ImageIO.write(outputImage, imageExt, new File("/home/liam/Documents/Web_Development/Projects/EventAppBackend/photos" + fileName + "." + imageExt));
+
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
     }
 
     private BufferedImage getImage(String filename) {

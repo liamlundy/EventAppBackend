@@ -7,6 +7,8 @@ import com.team.dan.db.UserDao;
 import javax.annotation.security.RolesAllowed;
 import javax.ws.rs.*;
 import javax.ws.rs.core.MediaType;
+import javax.ws.rs.core.Response;
+import javax.ws.rs.ext.ReaderInterceptor;
 import java.util.Set;
 
 /**
@@ -34,14 +36,18 @@ public class UserResource {
      */
     @GET
     @Path("/id/{id}")
-    public User getUserById(@PathParam("id") int id) {
-        User user = null;
+    public Response getUserById(@PathParam("id") int id) {
+        User user;
         try {
             user = userDao.getUserById(id);
         } catch (Exception e) {
             e.printStackTrace();
+            return Response.serverError().build();
         }
-        return user;
+        if (user != null)
+            return Response.ok(user).build();
+        else
+            return Response.noContent().build();
     }
 
     /**
@@ -50,9 +56,15 @@ public class UserResource {
      */
     @POST
     @Path("/create")
-    public void createUser(User user) {
-        userDao.createNewUser(user.getEmail(), user.getPassword(), user.isAdmin(), user.isValid(), user.getFirstName(),
-                user.getLastName());
+    public Response createUser(User user) {
+        try {
+            userDao.createNewUser(user.getEmail(), user.getPassword(), user.isAdmin(), user.isValid(), user.getFirstName(),
+                    user.getLastName());
+        } catch (Exception e) {
+            e.printStackTrace();
+            return Response.serverError().build();
+        }
+        return Response.ok().build();
     }
 
     /**
@@ -62,14 +74,18 @@ public class UserResource {
      */
     @GET
     @Path("/email/{email}")
-    public User getUserByEmail(@PathParam("email") String email) {
-        User user = null;
+    public Response getUserByEmail(@PathParam("email") String email) {
+        User user;
         try {
             user = userDao.getUserByEmail(email);
         } catch (Exception e) {
             e.printStackTrace();
+            return Response.serverError().build();
         }
-        return user;
+        if(user != null)
+            return Response.ok(user).build();
+        else
+            return Response.noContent().build();
     }
 
     /**
@@ -79,14 +95,15 @@ public class UserResource {
     @RolesAllowed("ADMIN")
     @GET
     @Path("/getall")
-    public Set<User> getAllUsers() {
+    public Response getAllUsers() {
         Set<User> users = null;
         try {
             users = userDao.getAllUsers();
         } catch (Exception e) {
             e.printStackTrace();
+            return Response.serverError().build();
         }
-        return users;
+        return Response.ok(users).build();
     }
 
     /**
@@ -96,12 +113,12 @@ public class UserResource {
      */
     @POST
     @Path("/login")
-    public User getAllUsers(User userCredentials) {
+    public Response login(User userCredentials) {
         User user = null;
         String password = userDao.getPassword(userCredentials.getEmail());
         if (password.equals(userCredentials.getPassword())) {
             user = userDao.getUserByEmail(userCredentials.getEmail());
         }
-        return user;
+        return Response.ok(user).build();
     }
 }
