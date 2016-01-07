@@ -5,6 +5,7 @@ import com.team.dan.core.Event;
 import com.team.dan.db.EventDao;
 import org.apache.commons.io.FilenameUtils;
 
+import javax.annotation.security.PermitAll;
 import javax.imageio.ImageIO;
 import javax.ws.rs.*;
 import javax.ws.rs.core.MediaType;
@@ -55,6 +56,7 @@ public class EventsResource {
         eventDao.deleteEvent(id);
     }
 
+    @PermitAll
     @POST
     @Path("/create")
     public void createEvent(Event event) {

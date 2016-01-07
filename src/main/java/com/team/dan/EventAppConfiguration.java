@@ -17,6 +17,10 @@ public class EventAppConfiguration extends Configuration  {
     @JsonProperty
     private DataSourceFactory database =  new DataSourceFactory();
 
+    /**
+     * return the database
+     * @return
+     */
     @JsonProperty("database")
     public DataSourceFactory getDataSourceFactory() {
         return database;
