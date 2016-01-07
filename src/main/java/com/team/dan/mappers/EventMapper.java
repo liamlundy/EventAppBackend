@@ -25,6 +25,7 @@ public class EventMapper implements ResultSetMapper<Event> {
         event.setPhotoLocation(resultSet.getString("photo_loc"));
         event.setTitle(resultSet.getString("title"));
         event.setLocation(resultSet.getString("location"));
+        event.setImageExt(resultSet.getString("image_ext"));
         return event;
     }
 }

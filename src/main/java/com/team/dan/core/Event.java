@@ -47,6 +47,10 @@ public class Event {
     @NotEmpty
     private Time time;
 
+    @JsonProperty
+    @NotEmpty
+    private String imageExt;
+
     public int getEventId() {
         return eventId;
     }
@@ -109,6 +113,14 @@ public class Event {
 
     public void setTime(Time time) {
         this.time = time;
+    }
+
+    public String getImageExt() {
+        return imageExt;
+    }
+
+    public void setImageExt(String imageExt) {
+        this.imageExt = imageExt;
     }
 
     @Override

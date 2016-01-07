@@ -55,7 +55,7 @@ public class EventAppApplication extends Application<EventAppConfiguration>{
 
         //Resource registration
         environment.jersey().register(new TestResource(eventDao));
-        environment.jersey().register(new EventsResource(eventDao));
+        environment.jersey().register(new EventsResource(eventDao, eventAppConfiguration.getPhotoLocation()));
         environment.jersey().register(new UserResource(userDao));
 
         //Register Multi Part file upload class

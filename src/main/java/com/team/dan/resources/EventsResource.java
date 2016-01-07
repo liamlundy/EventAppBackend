@@ -14,6 +14,8 @@ import javax.ws.rs.core.Response;
 import java.awt.*;
 import java.awt.image.BufferedImage;
 import java.io.*;
+import java.sql.Date;
+import java.sql.Time;
 import java.util.Set;
 
 /**
@@ -29,9 +31,25 @@ import java.util.Set;
 public class EventsResource {
 
     private final EventDao eventDao;
+    private final String photoLocationFull;
+    private final String photoLocationThumb;
 
-    public EventsResource(EventDao eventDao) {
+    public EventsResource(EventDao eventDao, String photoLocation) {
         this.eventDao = eventDao;
+        File baseDir = new File(photoLocation);
+        if (!baseDir.exists()) {
+            baseDir.mkdir();
+        }
+        this.photoLocationFull = String.format("%sfull/", photoLocation);
+        File fullDir = new File(photoLocationFull);
+        if (!fullDir.exists()) {
+            fullDir.mkdir();
+        }
+        this.photoLocationThumb = String.format("%sthumb/", photoLocation);
+        File thumbDir = new File(photoLocationThumb);
+        if (!thumbDir.exists()) {
+            thumbDir.mkdir();
+        }
     }
 
     @GET
@@ -61,26 +79,18 @@ public class EventsResource {
         return Response.ok(event).build();
     }
 
-    @PermitAll
-    @POST
-    @Path("/create")
-    public void createEvent(Event event) {
-        eventDao.insertEvent(event.getAuthorId(), event.getPhotoLocation(), event.getDescription(), event.getTitle(),
-                event.getLocation(), event.getDate(), event.getTime());
-    }
-
     @GET
     @Path("/getImage/{eventId}")
-    @Produces({"images/gif", "images/png", "images/jpg" })
+    @Produces({"images/gif", "images/png", "images/jpg"})
     public Response getEventImage(@PathParam("eventId") int id) {
 
-        String path = eventDao.getEventPhotoPath(id);
+        String imageExt = eventDao.getImageExt(id);
 
-        BufferedImage image = getImage(path);
+        BufferedImage image = getImage(String.format("%s%d.%s", photoLocationFull, id, imageExt));
 
         ByteArrayOutputStream baos = new ByteArrayOutputStream();
         try {
-            ImageIO.write(image, "png", baos);
+            ImageIO.write(image, imageExt, baos);
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -92,15 +102,24 @@ public class EventsResource {
         return Response.noContent().build();
     }
 
+    @PermitAll
     @POST
-    @Consumes(MediaType.MULTIPART_FORM_DATA)
-    @Path("/insert")
-    public Response fileUpload(@FormDataParam("image") final InputStream inputStream,
-                               @FormDataParam("image") final FormDataContentDisposition contentDispositionHeader) {
+    @Path("/create")
+    public Response createEvent(@FormDataParam("image") final InputStream inputStream,
+                                @FormDataParam("image") final FormDataContentDisposition contentDispositionHeader,
+                                @FormDataParam("authorId") final int authorId,
+                                @FormDataParam("description") final String description,
+                                @FormDataParam("title") final String title,
+                                @FormDataParam("location") final String location,
+                                @FormDataParam("date") final Date date,
+                                @FormDataParam("time") final Time time) {
+        eventDao.insertEvent(authorId, description, title, location, date, time);
+        int eventId = eventDao.getLastInsertedPieceId();
         String imageExt = FilenameUtils.getExtension(contentDispositionHeader.getFileName());
+
         try {
-            saveImage(inputStream, String.valueOf(1), imageExt);
-            saveImageThumb(String.valueOf(1), imageExt);
+            saveImage(inputStream, String.valueOf(eventId), imageExt);
+            saveImageThumb(String.valueOf(eventId), imageExt);
         } catch (IOException e) {
             e.printStackTrace();
             return Response.serverError().build();
@@ -108,8 +127,24 @@ public class EventsResource {
         return Response.ok().build();
     }
 
+//    @POST
+//    @Consumes(MediaType.MULTIPART_FORM_DATA)
+//    @Path("/insert")
+//    public Response fileUpload(@FormDataParam("image") final InputStream inputStream,
+//                               @FormDataParam("image") final FormDataContentDisposition contentDispositionHeader) {
+//        String imageExt = FilenameUtils.getExtension(contentDispositionHeader.getFileName());
+//        try {
+//            saveImage(inputStream, String.valueOf(1), imageExt);
+//            saveImageThumb(String.valueOf(1), imageExt);
+//        } catch (IOException e) {
+//            e.printStackTrace();
+//            return Response.serverError().build();
+//        }
+//        return Response.ok().build();
+//    }
+
     private void saveImage(InputStream inputStream, String fileName, String imageExt) throws IOException {
-        OutputStream os = new FileOutputStream("/home/liam/Documents/Web_Development/Projects/EventAppBackend/photos" + fileName + "." + imageExt);
+        OutputStream os = new FileOutputStream(String.format("%s%s.%s", photoLocationFull, fileName, imageExt));
         byte[] buffer = new byte[4096];
         int bytesRead;
         while ((bytesRead = inputStream.read(buffer)) != -1) {
@@ -121,7 +156,7 @@ public class EventsResource {
 
     private void saveImageThumb(String fileName, String imageExt) {
         try {
-            BufferedImage bufferedImage = ImageIO.read(new File("/home/liam/Documents/Web_Development/Projects/EventAppBackend/photos" + fileName + "." + imageExt));
+            BufferedImage bufferedImage = ImageIO.read(new File(String.format("%s%s.%s", photoLocationFull, fileName, imageExt)));
             double ratio = (double) bufferedImage.getWidth() / (double) bufferedImage.getHeight();
             double scaledHeight = 150;
             double scaledWidth = ratio * scaledHeight;
@@ -136,7 +171,7 @@ public class EventsResource {
             g2d.dispose();
 
             // writes to output file
-            ImageIO.write(outputImage, imageExt, new File("/home/liam/Documents/Web_Development/Projects/EventAppBackend/photos" + fileName + "." + imageExt));
+            ImageIO.write(outputImage, imageExt, new File(String.format("%s%s.%s", photoLocationThumb, fileName, imageExt)));
 
         } catch (IOException e) {
             e.printStackTrace();
