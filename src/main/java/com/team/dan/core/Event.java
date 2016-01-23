@@ -25,10 +25,6 @@ public class Event {
 
     @JsonProperty
     @NotEmpty
-    private String photoLocation;
-
-    @JsonProperty
-    @NotEmpty
     private String description;
 
     @JsonProperty
@@ -65,14 +61,6 @@ public class Event {
 
     public void setAuthorId(int authorId) {
         this.authorId = authorId;
-    }
-
-    public String getPhotoLocation() {
-        return photoLocation;
-    }
-
-    public void setPhotoLocation(String photoLocation) {
-        this.photoLocation = photoLocation;
     }
 
     public String getDescription() {
@@ -132,12 +120,12 @@ public class Event {
 
         if (eventId != event.eventId) return false;
         if (authorId != event.authorId) return false;
-        if (!photoLocation.equals(event.photoLocation)) return false;
         if (!description.equals(event.description)) return false;
         if (!title.equals(event.title)) return false;
         if (!location.equals(event.location)) return false;
         if (!date.equals(event.date)) return false;
-        return time.equals(event.time);
+        if (!time.equals(event.time)) return false;
+        return imageExt.equals(event.imageExt);
 
     }
 
@@ -145,12 +133,12 @@ public class Event {
     public int hashCode() {
         int result = eventId;
         result = 31 * result + authorId;
-        result = 31 * result + photoLocation.hashCode();
         result = 31 * result + description.hashCode();
         result = 31 * result + title.hashCode();
         result = 31 * result + location.hashCode();
         result = 31 * result + date.hashCode();
         result = 31 * result + time.hashCode();
+        result = 31 * result + imageExt.hashCode();
         return result;
     }
 
@@ -159,12 +147,12 @@ public class Event {
         return "Event{" +
                 "eventId=" + eventId +
                 ", authorId=" + authorId +
-                ", photoLocation='" + photoLocation + '\'' +
                 ", description='" + description + '\'' +
                 ", title='" + title + '\'' +
                 ", location='" + location + '\'' +
                 ", date=" + date +
                 ", time=" + time +
+                ", imageExt='" + imageExt + '\'' +
                 '}';
     }
 }

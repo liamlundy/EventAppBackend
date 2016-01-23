@@ -52,28 +52,19 @@ public interface EventDao {
     public Set<Event> getAllEvents();
 
     /**
-     * gets the path of a photo given that photos id
-     *
-     * @param id the id of the event
-     * @return the path to the photo
-     */
-    @SqlQuery("SELECT photo_loc\n" +
-            "FROM events\n" +
-            "WHERE event_id = :id")
-    public String getEventPhotoPath(@Bind("id") int id);
-
-    /**
      * Get the image extension/type for the event
+     *
      * @param id The event id
      * @return The image extension/type
      */
-    @SqlQuery("SELECT image_ext\n +" +
-            "FROM events\n +" +
+    @SqlQuery("SELECT image_ext\n" +
+            "FROM events\n" +
             "WHERE event_id = :id")
     public String getImageExt(@Bind("id") int id);
 
     /**
      * deletes an event from the database
+     *
      * @param id the id of the event to delete
      */
     @SqlUpdate("DELETE FROM events\n" +
@@ -90,10 +81,11 @@ public interface EventDao {
      * @param date        the date of the event in SQL date format
      * @param time        the time of the event in SQL time format
      */
-    @SqlUpdate("INSERT INTO events (author_id, description, title, location, date, time)\n" +
-            "VALUE(:authorId, :description, :title, :location, :date, :time)")
-    public void insertEvent(@Bind("authorId") int authorId, @Bind("description") String description, @Bind("title") String title,
-                            @Bind("location") String location, @Bind("date") Date date, @Bind("time") Time time);
+    @SqlUpdate("INSERT INTO events (author_id, description, title, location, date, time, image_ext)\n" +
+            "VALUE(:authorId, :description, :title, :location, :date, :time, :imageExt)")
+    public void insertEvent(@Bind("authorId") int authorId, @Bind("description") String description,
+                            @Bind("title") String title, @Bind("location") String location, @Bind("date") Date date,
+                            @Bind("time") Time time, @Bind("imageExt") String imageExt);
 
     /**
      * Gets the id of the event that was just inserted

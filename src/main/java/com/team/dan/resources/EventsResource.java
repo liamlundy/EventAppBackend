@@ -1,6 +1,5 @@
 package com.team.dan.resources;
 
-import com.sun.imageio.plugins.common.ImageUtil;
 import com.team.dan.core.Event;
 import com.team.dan.db.EventDao;
 import org.apache.commons.io.FilenameUtils;
@@ -14,10 +13,9 @@ import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import java.awt.*;
 import java.awt.image.BufferedImage;
-import java.io.ByteArrayOutputStream;
-import java.io.File;
-import java.io.IOException;
-import java.io.InputStream;
+import java.io.*;
+import java.sql.Date;
+import java.sql.Time;
 import java.util.Set;
 
 
@@ -89,7 +87,7 @@ public class EventsResource {
 
         String imageExt = eventDao.getImageExt(id);
 
-        BufferedImage image = getImage(path);
+        BufferedImage image = getImage(String.format("%s%d.%s", photoLocationFull, id, imageExt));
 
         ByteArrayOutputStream baos = new ByteArrayOutputStream();
         try {
@@ -106,19 +104,20 @@ public class EventsResource {
     }
 
     @PermitAll
+    @Consumes(MediaType.MULTIPART_FORM_DATA)
     @POST
     @Path("/create")
     public Response createEvent(@FormDataParam("image") final InputStream inputStream,
                                 @FormDataParam("image") final FormDataContentDisposition contentDispositionHeader,
-                                @FormDataParam("authorId") final int authorId,
+                                @FormDataParam("author_id") final int authorId,
                                 @FormDataParam("description") final String description,
                                 @FormDataParam("title") final String title,
                                 @FormDataParam("location") final String location,
                                 @FormDataParam("date") final Date date,
                                 @FormDataParam("time") final Time time) {
-        eventDao.insertEvent(authorId, description, title, location, date, time);
-        int eventId = eventDao.getLastInsertedPieceId();
         String imageExt = FilenameUtils.getExtension(contentDispositionHeader.getFileName());
+        eventDao.insertEvent(authorId, description, title, location, date, time, imageExt);
+        int eventId = eventDao.getLastInsertedPieceId();
 
         try {
             saveImage(inputStream, String.valueOf(eventId), imageExt);
@@ -129,22 +128,6 @@ public class EventsResource {
         }
         return Response.ok().build();
     }
-
-//    @POST
-//    @Consumes(MediaType.MULTIPART_FORM_DATA)
-//    @Path("/insert")
-//    public Response fileUpload(@FormDataParam("image") final InputStream inputStream,
-//                               @FormDataParam("image") final FormDataContentDisposition contentDispositionHeader) {
-//        String imageExt = FilenameUtils.getExtension(contentDispositionHeader.getFileName());
-//        try {
-//            saveImage(inputStream, String.valueOf(1), imageExt);
-//            saveImageThumb(String.valueOf(1), imageExt);
-//        } catch (IOException e) {
-//            e.printStackTrace();
-//            return Response.serverError().build();
-//        }
-//        return Response.ok().build();
-//    }
 
     private void saveImage(InputStream inputStream, String fileName, String imageExt) throws IOException {
         OutputStream os = new FileOutputStream(String.format("%s%s.%s", photoLocationFull, fileName, imageExt));
@@ -160,9 +143,8 @@ public class EventsResource {
     private void saveImageThumb(String fileName, String imageExt) {
         try {
             BufferedImage bufferedImage = ImageIO.read(new File(String.format("%s%s.%s", photoLocationFull, fileName, imageExt)));
-            double ratio = (double) bufferedImage.getWidth() / (double) bufferedImage.getHeight();
-            double scaledHeight = 150;
-            double scaledWidth = ratio * scaledHeight;
+            double scaledHeight = 200;
+            double scaledWidth = 200;
 
             // creates output image
             BufferedImage outputImage = new BufferedImage((int) scaledWidth,
@@ -186,18 +168,13 @@ public class EventsResource {
     @Produces({"images/gif", "images/png", "images/jpg" })
     public Response getEventImageThumb(@PathParam("eventId") int id) {
 
-        String path = eventDao.getEventPhotoPath(id);
+        String imageExt = eventDao.getImageExt(id);
 
-        String ext = FilenameUtils.getExtension(path);
-        String pathMinusExtension  = FilenameUtils.removeExtension(path);
-
-        path = pathMinusExtension + ".thumb." + ext;
-
-        BufferedImage image = getImage(path);
+        BufferedImage image = getImage(String.format("%s%d.%s", photoLocationThumb, id, imageExt));
 
         ByteArrayOutputStream baos = new ByteArrayOutputStream();
         try {
-            ImageIO.write(image, "png", baos);
+            ImageIO.write(image, imageExt, baos);
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -214,6 +191,7 @@ public class EventsResource {
         try {
             img = ImageIO.read(new File(filename));
         } catch (IOException e) {
+            e.printStackTrace();
         }
         return img;
     }
