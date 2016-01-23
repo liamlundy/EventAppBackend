@@ -11,3 +11,5 @@ server:
   adminConnectors:
       - type: http
         port: 8081
+
+photoLocation: /home/liam/Documents/Web_Development/Projects/EventAppBackend/photos/

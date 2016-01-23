@@ -23,6 +23,7 @@ public interface EventDao {
 
     /**
      * returns an event from the db based on id
+     *
      * @param id the event id
      * @return the specified event
      */
@@ -32,6 +33,7 @@ public interface EventDao {
 
     /**
      * returns the set of events that will occur in the next few weeks.
+     *
      * @return a set of events that will occur within the next week
      */
     @SqlQuery("SELECT *\n" +
@@ -42,6 +44,7 @@ public interface EventDao {
 
     /**
      * returns all the events
+     *
      * @return the set of all events
      */
     @SqlQuery("SELECT *\n" +
@@ -49,17 +52,19 @@ public interface EventDao {
     public Set<Event> getAllEvents();
 
     /**
-     * gets the path of a photo given that photos id
-     * @param id the id of the event
-     * @return the path to the photo
+     * Get the image extension/type for the event
+     *
+     * @param id The event id
+     * @return The image extension/type
      */
-    @SqlQuery("SELECT photo_loc\n" +
+    @SqlQuery("SELECT image_ext\n" +
             "FROM events\n" +
             "WHERE event_id = :id")
-    public String getEventPhotoPath(@Bind("id") int id);
+    public String getImageExt(@Bind("id") int id);
 
     /**
      * deletes an event from the database
+     *
      * @param id the id of the event to delete
      */
     @SqlUpdate("DELETE FROM events\n" +
@@ -68,17 +73,25 @@ public interface EventDao {
 
     /**
      * Inserts a new event into the db
-     * @param authorId the user id of the author
-     * @param photoLocation the location of the event photo
+     *
+     * @param authorId    the user id of the author
      * @param description the description of the event.
-     * @param title the title of the event
-     * @param location the event's location
-     * @param date the date of the event in SQL date format
-     * @param time the time of the event in SQL time format
+     * @param title       the title of the event
+     * @param location    the event's location
+     * @param date        the date of the event in SQL date format
+     * @param time        the time of the event in SQL time format
      */
-    @SqlUpdate("INSERT INTO events (author_id, photo_loc, description, title, location, date, time)\n" +
-            "VALUE(:authorId, :photoLocation, :description, :title, :location, :date, :time)")
-    public void insertEvent(@Bind("authorId") int authorId, @Bind("photoLocation") String photoLocation,
-                            @Bind("description") String description, @Bind("title") String title,
-                            @Bind("location") String location, @Bind("date") Date date, @Bind("time") Time time);
+    @SqlUpdate("INSERT INTO events (author_id, description, title, location, date, time, image_ext)\n" +
+            "VALUE(:authorId, :description, :title, :location, :date, :time, :imageExt)")
+    public void insertEvent(@Bind("authorId") int authorId, @Bind("description") String description,
+                            @Bind("title") String title, @Bind("location") String location, @Bind("date") Date date,
+                            @Bind("time") Time time, @Bind("imageExt") String imageExt);
+
+    /**
+     * Gets the id of the event that was just inserted
+     *
+     * @return the most recent event id
+     */
+    @SqlQuery("SELECT LAST_INSERT_ID();")
+    public int getLastInsertedPieceId();
 }
