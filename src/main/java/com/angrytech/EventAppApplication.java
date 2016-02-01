@@ -1,14 +1,13 @@
-package com.team.dan;
+package com.angrytech;
 
-import com.team.dan.auth.EventAppAuthenticator;
-import com.team.dan.auth.EventAppAuthorizer;
-import com.team.dan.core.Event;
-import com.team.dan.core.User;
-import com.team.dan.db.EventDao;
-import com.team.dan.db.UserDao;
-import com.team.dan.resources.EventsResource;
-import com.team.dan.resources.TestResource;
-import com.team.dan.resources.UserResource;
+import com.angrytech.auth.EventAppAuthenticator;
+import com.angrytech.core.User;
+import com.angrytech.resources.EventsResource;
+import com.angrytech.resources.TestResource;
+import com.angrytech.auth.EventAppAuthorizer;
+import com.angrytech.db.EventDao;
+import com.angrytech.db.UserDao;
+import com.angrytech.resources.UserResource;
 import io.dropwizard.Application;
 import io.dropwizard.auth.AuthDynamicFeature;
 import io.dropwizard.auth.AuthValueFactoryProvider;

@@ -1,7 +1,7 @@
-package com.team.dan.resources;
+package com.angrytech.resources;
 
-import com.team.dan.core.Event;
-import com.team.dan.db.EventDao;
+import com.angrytech.core.Event;
+import com.angrytech.db.EventDao;
 
 import javax.ws.rs.*;
 import javax.ws.rs.core.MediaType;

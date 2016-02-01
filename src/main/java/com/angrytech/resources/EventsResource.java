@@ -1,7 +1,6 @@
-package com.team.dan.resources;
+package com.angrytech.resources;
 
-import com.team.dan.core.Event;
-import com.team.dan.db.EventDao;
+import com.angrytech.db.EventDao;
 import org.apache.commons.io.FilenameUtils;
 import org.glassfish.jersey.media.multipart.FormDataContentDisposition;
 import org.glassfish.jersey.media.multipart.FormDataParam;
@@ -56,14 +55,14 @@ public class EventsResource {
     @GET
     @Path("/weeklyevents")
     public Response getWeeklyEvents() {
-        Set<Event> events = eventDao.getNextWeek();
+        Set<com.angrytech.core.Event> events = eventDao.getNextWeek();
         return Response.ok(events).build();
     }
 
     @GET
     @Path("/allevents")
     public Response getAllEvents() {
-        Set<Event> events = eventDao.getAllEvents();
+        Set<com.angrytech.core.Event> events = eventDao.getAllEvents();
         return Response.ok(events).build();
     }
 
@@ -76,7 +75,7 @@ public class EventsResource {
     @GET
     @Path("/id/{id}")
     public Response getEvent(@PathParam("id") int id) {
-        Event event = eventDao.getEvent(id);
+        com.angrytech.core.Event event = eventDao.getEvent(id);
         return Response.ok(event).build();
     }
 

@@ -1,7 +1,6 @@
-package com.team.dan.mappers;
+package com.angrytech.mappers;
 
-import com.team.dan.core.Event;
-import com.team.dan.core.User;
+import com.angrytech.core.User;
 import org.skife.jdbi.v2.StatementContext;
 import org.skife.jdbi.v2.tweak.ResultSetMapper;
 

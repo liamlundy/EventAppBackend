@@ -1,14 +1,11 @@
-package com.team.dan.auth;
+package com.angrytech.auth;
 
+import com.angrytech.core.User;
 import com.google.common.base.Optional;
-import com.team.dan.core.User;
-import com.team.dan.db.UserDao;
+import com.angrytech.db.UserDao;
 import io.dropwizard.auth.AuthenticationException;
 import io.dropwizard.auth.Authenticator;
 import io.dropwizard.auth.basic.BasicCredentials;
-
-import java.security.NoSuchAlgorithmException;
-import java.security.spec.InvalidKeySpecException;
 
 /**
  * Author: Liam Lundy

@@ -1,14 +1,12 @@
-package com.team.dan.resources;
+package com.angrytech.resources;
 
-import com.team.dan.core.User;
-import com.team.dan.db.EventDao;
-import com.team.dan.db.UserDao;
+import com.angrytech.core.User;
+import com.angrytech.db.UserDao;
 
 import javax.annotation.security.RolesAllowed;
 import javax.ws.rs.*;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
-import javax.ws.rs.ext.ReaderInterceptor;
 import java.util.Set;
 
 /**

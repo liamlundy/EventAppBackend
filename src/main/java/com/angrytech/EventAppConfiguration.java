@@ -1,4 +1,4 @@
-package com.team.dan;
+package com.angrytech;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 import io.dropwizard.Configuration;

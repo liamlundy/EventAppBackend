@@ -1,7 +1,7 @@
-package com.team.dan.auth;
+package com.angrytech.auth;
 
-import com.team.dan.core.User;
-import com.team.dan.db.UserDao;
+import com.angrytech.core.User;
+import com.angrytech.db.UserDao;
 import io.dropwizard.auth.Authorizer;
 
 /**

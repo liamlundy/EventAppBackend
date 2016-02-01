@@ -1,7 +1,7 @@
-package com.team.dan.db;
+package com.angrytech.db;
 
-import com.team.dan.core.Event;
-import com.team.dan.mappers.EventMapper;
+import com.angrytech.core.Event;
+import com.angrytech.mappers.EventMapper;
 import org.skife.jdbi.v2.sqlobject.Bind;
 import org.skife.jdbi.v2.sqlobject.SqlQuery;
 import org.skife.jdbi.v2.sqlobject.SqlUpdate;

@@ -1,4 +1,4 @@
-package com.team.dan.core;
+package com.angrytech.core;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 import org.hibernate.validator.constraints.NotEmpty;

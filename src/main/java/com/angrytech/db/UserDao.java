@@ -1,7 +1,7 @@
-package com.team.dan.db;
+package com.angrytech.db;
 
-import com.team.dan.core.User;
-import com.team.dan.mappers.UserMapper;
+import com.angrytech.core.User;
+import com.angrytech.mappers.UserMapper;
 import org.skife.jdbi.v2.sqlobject.Bind;
 import org.skife.jdbi.v2.sqlobject.SqlQuery;
 import org.skife.jdbi.v2.sqlobject.SqlUpdate;
