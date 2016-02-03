@@ -2,8 +2,9 @@ package com.angrytech;
 
 import com.angrytech.auth.EventAppAuthenticator;
 import com.angrytech.core.User;
+import com.angrytech.db.GroupDao;
 import com.angrytech.resources.EventsResource;
-import com.angrytech.resources.TestResource;
+import com.angrytech.resources.GroupResource;
 import com.angrytech.auth.EventAppAuthorizer;
 import com.angrytech.db.EventDao;
 import com.angrytech.db.UserDao;
@@ -51,11 +52,12 @@ public class EventAppApplication extends Application<EventAppConfiguration>{
         //Database Access Objects
         final EventDao eventDao = jdbi.onDemand(EventDao.class);
         final UserDao userDao = jdbi.onDemand(UserDao.class);
+        final GroupDao groupDao = jdbi.onDemand(GroupDao.class);
 
         //Resource registration
-        environment.jersey().register(new TestResource(eventDao));
         environment.jersey().register(new EventsResource(eventDao, eventAppConfiguration.getPhotoLocation()));
         environment.jersey().register(new UserResource(userDao));
+        environment.jersey().register(new GroupResource(groupDao));
 
         //Register Multi Part file upload class
         environment.jersey().register(MultiPartFeature.class);

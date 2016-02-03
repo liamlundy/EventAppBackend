@@ -1,6 +1,9 @@
 package com.angrytech.resources;
 
+import com.angrytech.core.Event;
+import com.angrytech.core.Group;
 import com.angrytech.db.EventDao;
+import com.angrytech.db.GroupDao;
 import org.apache.commons.io.FilenameUtils;
 import org.glassfish.jersey.media.multipart.FormDataContentDisposition;
 import org.glassfish.jersey.media.multipart.FormDataParam;
@@ -25,7 +28,7 @@ import java.util.Set;
  * Package: ${PACKAGE}
  * Project: ${PROJECT}
  */
-@Path("/events")
+@Path("events")
 @Produces(MediaType.APPLICATION_JSON)
 @Consumes(MediaType.APPLICATION_JSON)
 public class EventsResource {
@@ -34,6 +37,11 @@ public class EventsResource {
     private final String photoLocationFull;
     private final String photoLocationThumb;
 
+    /**
+     *
+     * @param eventDao
+     * @param photoLocation
+     */
     public EventsResource(EventDao eventDao, String photoLocation) {
         this.eventDao = eventDao;
         File baseDir = new File(photoLocation);
@@ -52,37 +60,78 @@ public class EventsResource {
         }
     }
 
+    /**
+     *
+     * @return
+     */
     @GET
-    @Path("/weeklyevents")
+    @Path("weeklyevents")
     public Response getWeeklyEvents() {
-        Set<com.angrytech.core.Event> events = eventDao.getNextWeek();
+        Set<Event> events = eventDao.getNextWeek();
         return Response.ok(events).build();
     }
 
+    /**
+     *
+     * @return
+     */
     @GET
-    @Path("/allevents")
+    @Path("allevents")
     public Response getAllEvents() {
-        Set<com.angrytech.core.Event> events = eventDao.getAllEvents();
+        Set<Event> events = eventDao.getAllEvents();
         return Response.ok(events).build();
     }
 
-    @DELETE
-    @Path("/delete/{id}")
-    public void deleteEvent(@PathParam("id") int id) {
-        eventDao.deleteEvent(id);
+    /**
+     *
+     * @param id
+     * @return
+     */
+    @GET
+    @Path("byGroup/{group_id}")
+    public Response getEventsByGroup(@PathParam("group_id") int id) {
+        Set<Event> events = eventDao.getEventsByGroup(id);
+        return Response.ok(events).build();
     }
 
+    /**
+     *
+     * @param id
+     * @return
+     */
+    @DELETE
+    @Path("delete/{id}")
+    public Response deleteEvent(@PathParam("id") int id) {
+        try {
+            eventDao.deleteEvent(id);
+            return Response.ok().build();
+        } catch (Exception e) {
+            e.printStackTrace();
+            return Response.serverError().build();
+        }
+    }
+
+    /**
+     *
+     * @param id
+     * @return
+     */
     @GET
-    @Path("/id/{id}")
+    @Path("id/{id}")
     public Response getEvent(@PathParam("id") int id) {
-        com.angrytech.core.Event event = eventDao.getEvent(id);
+        Event event = eventDao.getEvent(id);
         return Response.ok(event).build();
     }
 
+    /**
+     *
+     * @param id
+     * @return
+     */
     @GET
-    @Path("/getImage/{eventId}")
+    @Path("getImage/{event_id}")
     @Produces({"images/gif", "images/png", "images/jpg"})
-    public Response getEventImage(@PathParam("eventId") int id) {
+    public Response getEventImage(@PathParam("event_id") int id) {
 
         String imageExt = eventDao.getImageExt(id);
 
@@ -102,10 +151,50 @@ public class EventsResource {
         return Response.noContent().build();
     }
 
+    /**
+     *
+     * @param id
+     * @return
+     */
+    @GET
+    @Path("getImageThumb/{event_id}")
+    @Produces({"images/gif", "images/png", "images/jpg" })
+    public Response getEventImageThumb(@PathParam("event_id") int id) {
+
+        String imageExt = eventDao.getImageExt(id);
+
+        BufferedImage image = getImage(String.format("%s%d.%s", photoLocationThumb, id, imageExt));
+
+        ByteArrayOutputStream baos = new ByteArrayOutputStream();
+        try {
+            ImageIO.write(image, imageExt, baos);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        byte[] imageData = baos.toByteArray();
+
+        if (imageData != null)
+            return Response.ok(imageData).build();
+
+        return Response.noContent().build();
+    }
+
+    /**
+     *
+     * @param inputStream
+     * @param contentDispositionHeader
+     * @param authorId
+     * @param description
+     * @param title
+     * @param location
+     * @param date
+     * @param time
+     * @return
+     */
     @PermitAll
     @Consumes(MediaType.MULTIPART_FORM_DATA)
     @POST
-    @Path("/create")
+    @Path("create")
     public Response createEvent(@FormDataParam("image") final InputStream inputStream,
                                 @FormDataParam("image") final FormDataContentDisposition contentDispositionHeader,
                                 @FormDataParam("author_id") final int authorId,
@@ -125,9 +214,16 @@ public class EventsResource {
             e.printStackTrace();
             return Response.serverError().build();
         }
-        return Response.ok().build();
+        return Response.ok(eventId).build();
     }
 
+    /**
+     *
+     * @param inputStream
+     * @param fileName
+     * @param imageExt
+     * @throws IOException
+     */
     private void saveImage(InputStream inputStream, String fileName, String imageExt) throws IOException {
         OutputStream os = new FileOutputStream(String.format("%s%s.%s", photoLocationFull, fileName, imageExt));
         byte[] buffer = new byte[4096];
@@ -139,6 +235,11 @@ public class EventsResource {
         os.close();
     }
 
+    /**
+     *
+     * @param fileName
+     * @param imageExt
+     */
     private void saveImageThumb(String fileName, String imageExt) {
         try {
             BufferedImage bufferedImage = ImageIO.read(new File(String.format("%s%s.%s", photoLocationFull, fileName, imageExt)));
@@ -161,30 +262,12 @@ public class EventsResource {
             e.printStackTrace();
         }
     }
-	
-	@GET
-    @Path("/getImageThumb/{eventId}")
-    @Produces({"images/gif", "images/png", "images/jpg" })
-    public Response getEventImageThumb(@PathParam("eventId") int id) {
 
-        String imageExt = eventDao.getImageExt(id);
-
-        BufferedImage image = getImage(String.format("%s%d.%s", photoLocationThumb, id, imageExt));
-
-        ByteArrayOutputStream baos = new ByteArrayOutputStream();
-        try {
-            ImageIO.write(image, imageExt, baos);
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-        byte[] imageData = baos.toByteArray();
-
-        if (imageData != null)
-            return Response.ok(imageData).build();
-
-        return Response.noContent().build();
-	}
-
+    /**
+     *
+     * @param filename
+     * @return
+     */
     private BufferedImage getImage(String filename) {
         BufferedImage img = null;
         try {

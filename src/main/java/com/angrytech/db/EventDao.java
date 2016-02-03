@@ -42,6 +42,14 @@ public interface EventDao {
             "      date < DATE_ADD(NOW(), INTERVAL 1 WEEK)")
     public Set<Event> getNextWeek();
 
+    @SqlQuery("SELECT *\n" +
+            "FROM events\n" +
+            "  INNER JOIN group_event\n" +
+            "    ON events.event_id = group_event.event_id\n" +
+            "WHERE group_id = :group_id AND\n" +
+            "      date > NOW();")
+    public Set<Event> getEventsByGroup(@Bind("group_id") int groupId);
+
     /**
      * returns all the events
      *
